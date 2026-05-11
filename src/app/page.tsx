@@ -1,404 +1,375 @@
-"use client";
-
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { prisma } from "@/lib/db";
+import MultilingualHello from "@/components/MultilingualHello";
+import CountUp from "@/components/CountUp";
+import AmbientBlobs from "@/components/AmbientBlobs";
+import FeaturedVideo from "@/components/FeaturedVideo";
+import CinemaFrame from "@/components/CinemaFrame";
+import SkillsGrid from "@/components/SkillsGrid";
+import { Reveal } from "@/components/motion/Reveal";
+import Magnetic from "@/components/motion/Magnetic";
 import {
-  GraduationCap,
-  Rocket,
-  Brain,
   ArrowRight,
-  Sparkles,
+  Mic,
+  Play,
 } from "lucide-react";
-import LetterReveal from "@/components/LetterReveal";
-import FloatingStickers from "@/components/FloatingStickers";
-import TiltCard from "@/components/TiltCard";
-import RotatingText from "@/components/RotatingText";
-import ParallaxSection from "@/components/ParallaxSection";
 
-const highlights = [
-  {
-    emoji: "🎓",
-    icon: GraduationCap,
-    title: "WLOT Scholar",
-    desc: "IB Diploma at GNS, Canada",
-    color: "from-violet-500 to-purple-600",
-    bg: "bg-violet-50",
-    border: "border-violet-200",
-    glow: "rgba(139, 92, 246, 0.2)",
-  },
-  {
-    emoji: "🚀",
-    icon: Rocket,
-    title: "Founded Alpha Seekers",
-    desc: "Teaching Afghan students worldwide",
-    color: "from-pink-500 to-rose-600",
-    bg: "bg-pink-50",
-    border: "border-pink-200",
-    glow: "rgba(236, 72, 153, 0.2)",
-  },
-  {
-    emoji: "🧠",
-    icon: Brain,
-    title: "Future: Dr. Sahar Nikzad",
-    desc: "Neuroscience & medicine",
-    color: "from-amber-500 to-orange-600",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    glow: "rgba(245, 158, 11, 0.2)",
-  },
-];
+export const dynamic = "force-dynamic";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.15, duration: 0.6, ease: "easeOut" as const },
-  }),
-};
+function extractYouTubeId(url: string): string | null {
+  const patterns = [
+    /youtu\.be\/([^?&]+)/,
+    /youtube\.com\/watch\?v=([^?&]+)/,
+    /youtube\.com\/embed\/([^?&]+)/,
+  ];
+  for (const re of patterns) {
+    const m = url.match(re);
+    if (m) return m[1];
+  }
+  return null;
+}
 
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.6, ease: "easeOut" as const },
-  },
-};
+export default async function HomePage() {
+  const [profile, greetings, skills, initiatives, allMedia] = await Promise.all([
+    prisma.profile.findUnique({ where: { id: "singleton" } }),
+    prisma.greeting.findMany({ orderBy: { order: "asc" } }),
+    prisma.skill.findMany({
+      orderBy: [{ category: "asc" }, { order: "asc" }],
+    }),
+    prisma.initiative.findMany({ orderBy: { order: "asc" }, take: 3 }),
+    prisma.media.findMany({ orderBy: { order: "asc" } }),
+  ]);
 
-export default function HomePage() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
-  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 50]);
+  const name = profile?.name ?? "Sahar Nikzad";
+  const firstName = name.split(" ")[0];
+  const tagline = profile?.tagline ?? "";
+  const nameMeaning = profile?.nameMeaning ?? "";
+  const profileImage = profile?.profileImage ?? "/images/sahar.jpg";
+  const totalHours = profile?.totalServiceHours ?? 0;
+
+  const videos = allMedia.filter((m) => m.type === "Video" && m.youtubeUrl);
+  const speech =
+    videos.find((v) => /speech|assembly|speaking/i.test(v.title)) ??
+    videos[0] ??
+    null;
+  const otherVideos = videos.filter((v) => v.id !== speech?.id);
+  const speechId = speech?.youtubeUrl
+    ? extractYouTubeId(speech.youtubeUrl)
+    : null;
 
   return (
     <>
       {/* ─── HERO ─── */}
-      <section
-        ref={heroRef}
-        className="relative min-h-[95vh] flex items-center justify-center overflow-hidden"
-      >
-        <FloatingStickers />
+      <section className="relative min-h-[92vh] flex items-center overflow-hidden bg-white">
+        <AmbientBlobs />
 
-        <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
-          className="section-container text-center relative z-10"
-        >
-          {/* Sahar's real photo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
-            className="mx-auto mb-6 relative"
-          >
-            <div className="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden ring-4 ring-purple-200 ring-offset-4 ring-offset-white shadow-xl mx-auto relative">
+        <div className="section-container relative grid lg:grid-cols-[1.2fr_1fr] gap-12 items-center py-20">
+          <div>
+            {greetings.length > 0 && (
+              <div className="text-sky-600 font-handwriting text-4xl md:text-6xl mb-3 leading-none">
+                <MultilingualHello
+                  greetings={greetings.map((g) => ({
+                    text: g.text,
+                    language: g.language,
+                  }))}
+                />
+              </div>
+            )}
+            <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-blue-950 leading-[0.95] tracking-tight mb-6">
+              I&apos;m{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">{firstName}.</span>
+                <span className="absolute left-0 right-0 bottom-2 h-3 md:h-4 bg-sky-300/70 -z-0 rounded" />
+              </span>
+            </h1>
+            {nameMeaning && (
+              <p className="text-gray-700 italic max-w-xl mb-5 text-lg">
+                {nameMeaning}
+              </p>
+            )}
+            {tagline && (
+              <p className="text-lg md:text-xl text-blue-950/80 max-w-xl mb-8 leading-relaxed">
+                {tagline}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-3">
+              {speechId && (
+                <Magnetic strength={0.25}>
+                  <a
+                    href="#speech"
+                    data-cursor-hover
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-950 text-white font-semibold hover:bg-blue-800 transition shadow-lg shadow-blue-950/20 hover:shadow-xl"
+                  >
+                    <Play className="w-4 h-4 fill-current" /> Watch my speech
+                  </a>
+                </Magnetic>
+              )}
+              <Magnetic strength={0.2}>
+                <Link
+                  href="/journey"
+                  data-cursor-hover
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-blue-950 text-blue-950 font-semibold hover:bg-blue-950 hover:text-white transition"
+                >
+                  My journey <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Magnetic>
+            </div>
+
+            <div className="flex items-center gap-6 mt-10">
+              {totalHours > 0 && (
+                <div>
+                  <p className="text-3xl md:text-4xl font-black text-blue-950 leading-none">
+                    <CountUp end={totalHours} suffix="+" />
+                  </p>
+                  <p className="text-xs uppercase tracking-wider text-blue-700 mt-1">
+                    Service hours
+                  </p>
+                </div>
+              )}
+              {skills.length > 0 && (
+                <div>
+                  <p className="text-3xl md:text-4xl font-black text-blue-950 leading-none">
+                    <CountUp end={skills.length} />
+                  </p>
+                  <p className="text-xs uppercase tracking-wider text-blue-700 mt-1">
+                    Skills & crafts
+                  </p>
+                </div>
+              )}
+              {initiatives.length > 0 && (
+                <div>
+                  <p className="text-3xl md:text-4xl font-black text-blue-950 leading-none">
+                    <CountUp end={initiatives.length} />
+                  </p>
+                  <p className="text-xs uppercase tracking-wider text-blue-700 mt-1">
+                    Initiatives
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="relative aspect-[3/4] w-full max-w-sm mx-auto rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-blue-950/10 rotate-2">
               <Image
-                src="/images/sahar.jpg"
-                alt="Sahar Nikzad at Glenlyon Norfolk School"
+                src={profileImage}
+                alt={name}
                 fill
-                className="object-cover object-top"
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
                 priority
               />
             </div>
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -bottom-1 right-1/2 translate-x-8 md:translate-x-10 text-xl"
-            >
-              ✨
-            </motion.div>
-          </motion.div>
-
-          {/* Handwriting annotation */}
-          <motion.p
-            initial={{ opacity: 0, y: -20, rotate: -3 }}
-            animate={{ opacity: 1, y: 0, rotate: -3 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
-            className="handwriting text-2xl md:text-3xl mb-4"
-          >
-            just getting started ✨
-          </motion.p>
-
-          {/* Name — Letter by Letter */}
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black gradient-text leading-none mb-2">
-            <LetterReveal text="Sahar" delay={0.3} />
-          </h1>
-          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black gradient-text leading-none mb-6">
-            <LetterReveal text="Nikzad" delay={0.5} />
-          </h1>
-
-          {/* Rotating Identity */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="mb-8"
-          >
-            <span className="text-xl md:text-2xl text-gray-600 font-medium">
-              Student &middot; Scholar &middot;{" "}
-              <RotatingText className="font-bold text-2xl md:text-3xl" />
-            </span>
-          </motion.div>
-
-          {/* Sticker Badges — staggered entrance */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-            className="flex flex-wrap justify-center gap-2 mb-8"
-          >
-            {[
-              "🎓 IB Student",
-              "🏆 WLOT Scholar",
-              "🚀 Founder",
-              "🧠 Dreamer",
-              "🔧 Builder",
-            ].map((tag, i) => (
-              <motion.span
-                key={tag}
-                initial={{ opacity: 0, scale: 0, rotate: -10 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                transition={{
-                  delay: 1.3 + i * 0.1,
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 15,
-                }}
-                whileHover={{
-                  scale: 1.1,
-                  rotate: Math.random() > 0.5 ? 3 : -3,
-                }}
-                className="sticker-badge cursor-default"
-              >
-                {tag}
-              </motion.span>
-            ))}
-          </motion.div>
-
-          {/* Intro */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.6 }}
-            className="max-w-2xl mx-auto text-lg text-gray-600 mb-10 leading-relaxed"
-          >
-            From Afghanistan to Canada on a WLOT scholarship, I chose to dream bigger
-            than anyone expected. I taught literacy to women, earned my own way by teaching math,
-            and built{" "}
-            <motion.span
-              className="font-semibold text-purple-600 relative inline-block"
-              whileHover={{ scale: 1.05 }}
-            >
-              Alpha Seekers Network
-              <motion.span
-                className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 2, duration: 0.6 }}
-              />
-            </motion.span>{" "}
-            to empower students across Afghanistan. Now I&apos;m chasing the biggest dream of all:{" "}
-            <span className="font-semibold text-amber-600">&ldquo;Dr. Sahar Nikzad, to the emergency department.&rdquo;</span>
-          </motion.p>
-
-          {/* CTAs with bounce */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.8, type: "spring", stiffness: 100 }}
-            className="flex flex-wrap justify-center gap-4"
-          >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/journey" className="btn-primary">
-                Read My Story <ArrowRight className="w-4 h-4" />
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/vision" className="btn-outline">
-                See My Vision <Sparkles className="w-4 h-4" />
-              </Link>
-            </motion.div>
-          </motion.div>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-6 h-10 rounded-full border-2 border-purple-300 flex items-start justify-center p-1.5"
-          >
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1.5 h-1.5 rounded-full bg-purple-400"
-            />
-          </motion.div>
-        </motion.div>
+            <div className="absolute -bottom-3 -right-3 bg-white text-blue-950 px-5 py-3 rounded-2xl shadow-2xl border border-blue-100 max-w-[14rem]">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-blue-600 font-mono mb-1">
+                Currently
+              </p>
+              <p className="text-sm font-semibold">
+                Building AlphaSeekers · Telling stories
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ─── HIGHLIGHT CARDS with Tilt ─── */}
-      <ParallaxSection offset={30}>
-        <section className="py-20">
+      {/* ─── FEATURED SPEECH (cinema) ─── */}
+      {speech && speechId && (
+        <section
+          id="speech"
+          className="relative py-24 md:py-32 bg-gradient-to-b from-blue-950 via-[#040a1f] to-blue-950 text-white overflow-hidden"
+        >
+          {/* Film-grain tint */}
+          <div
+            className="absolute inset-0 opacity-[0.07] pointer-events-none mix-blend-overlay"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E\")",
+            }}
+          />
+          <div className="section-container relative max-w-6xl">
+            <div className="text-center mb-14">
+              <p className="inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.4em] text-sky-300 font-mono mb-5">
+                <span className="w-8 h-px bg-sky-300/60" />
+                <Mic className="w-3.5 h-3.5" /> Now showing
+                <span className="w-8 h-px bg-sky-300/60" />
+              </p>
+              <h2 className="text-5xl md:text-7xl font-black leading-[0.95] mb-4">
+                Standing up for girls&apos; education.
+              </h2>
+              {speech.description && (
+                <p className="text-blue-100/70 max-w-2xl mx-auto mt-4 text-lg">
+                  {speech.description}
+                </p>
+              )}
+            </div>
+            <CinemaFrame
+              youtubeId={speechId}
+              title={speech.title}
+              eyebrow="Assembly speech · 2025"
+            />
+          </div>
+        </section>
+      )}
+
+      {/* ─── SKILLS ─── */}
+      {skills.length > 0 && (
+        <section className="relative py-24 md:py-32 bg-gradient-to-b from-white via-sky-50/40 to-white overflow-hidden">
+          <div className="section-container relative">
+            <div className="text-center mb-14">
+              <span className="section-eyebrow">
+                <Reveal type="mask">What I do</Reveal>
+              </span>
+              <h2 className="section-title mt-2">
+                <Reveal type="mask" delay={0.05}>Curious in a lot of ways.</Reveal>
+              </h2>
+            </div>
+            <SkillsGrid
+              skills={skills.map((s) => ({
+                id: s.id,
+                name: s.name,
+                category: s.category,
+                description: s.description,
+              }))}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* ─── INITIATIVES PREVIEW ─── */}
+      {initiatives.length > 0 && (
+        <section className="py-24 md:py-32 bg-white">
           <div className="section-container">
-            <div className="grid md:grid-cols-3 gap-6">
-              {highlights.map((item, i) => (
-                <motion.div
-                  key={item.title}
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                  variants={fadeUp}
+            <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
+              <div>
+                <span className="section-eyebrow">Building &amp; leading</span>
+                <h2 className="section-title mt-2">
+                  Things I&apos;m building.
+                </h2>
+              </div>
+              <Link
+                href="/initiatives"
+                className="text-blue-700 font-medium inline-flex items-center gap-1 hover:gap-2 transition-all"
+              >
+                See all <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-3 gap-px bg-blue-950/10 rounded-3xl overflow-hidden">
+              {initiatives.map((it) => (
+                <article
+                  key={it.id}
+                  className="bg-white p-7 md:p-8 hover:bg-blue-50/40 transition-colors group"
                 >
-                  <TiltCard
-                    className="h-full"
-                    glowColor={item.glow}
-                  >
-                    <div
-                      className={`glass-card p-8 ${item.bg} border ${item.border} h-full`}
-                    >
-                      <motion.span
-                        className="text-4xl mb-4 block"
-                        whileHover={{ scale: 1.3, rotate: 15 }}
-                        transition={{ type: "spring" }}
-                      >
-                        {item.emoji}
-                      </motion.span>
-                      <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                      <p className="text-gray-600">{item.desc}</p>
+                  {it.image ? (
+                    <div className="aspect-video relative rounded-2xl overflow-hidden mb-5 bg-blue-50">
+                      <Image
+                        src={it.image}
+                        alt={it.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
                     </div>
-                  </TiltCard>
-                </motion.div>
+                  ) : (
+                    <div className="aspect-video rounded-2xl mb-5 bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center text-blue-300">
+                      <span className="text-5xl font-serif italic">
+                        {it.name[0]}
+                      </span>
+                    </div>
+                  )}
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-blue-600 font-mono mb-2">
+                    {it.role}
+                  </p>
+                  <h3 className="text-xl font-bold text-blue-950 mb-2">
+                    {it.name}
+                  </h3>
+                  {it.description && (
+                    <p className="text-sm text-blue-950/70 line-clamp-3 leading-relaxed">
+                      {it.description}
+                    </p>
+                  )}
+                  {it.link && (
+                    <a
+                      href={it.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-700 font-medium inline-flex items-center gap-1 mt-4 hover:gap-2 transition-all"
+                    >
+                      Visit <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </article>
               ))}
             </div>
           </div>
         </section>
-      </ParallaxSection>
+      )}
 
-      {/* ─── ABOUT PREVIEW ─── */}
-      <section className="py-20 bg-gradient-to-b from-transparent to-purple-50/30">
-        <div className="section-container text-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={scaleIn}
-            className="max-w-3xl mx-auto"
-          >
-            <motion.p
-              initial={{ opacity: 0, rotate: -5 }}
-              whileInView={{ opacity: 1, rotate: -3 }}
-              viewport={{ once: true }}
-              className="handwriting text-2xl md:text-3xl mb-4"
-            >
-              a little about me 💫
-            </motion.p>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Every big journey starts with a{" "}
-              <motion.span
-                className="gradient-text inline-block"
-                whileInView={{ scale: [0.9, 1.05, 1] }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-              >
-                bold step
-              </motion.span>
-            </h2>
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              I decided early on that my story would be one of strength, not
-              circumstance. I taught literacy to women in my community, earned my
-              own way by teaching mathematics, and built Alpha Seekers Network
-              to make sure no ambitious student has to dream alone. Now at GNS IB
-              School in Canada, I&apos;m building toward my biggest dream:
-              becoming Dr. Sahar Nikzad 🚀
-            </p>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/journey" className="btn-primary">
-                Read My Full Story <ArrowRight className="w-4 h-4" />
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── ALPHA SEEKERS PREVIEW ─── */}
-      <ParallaxSection offset={20}>
-        <section className="py-20">
+      {/* ─── OTHER VIDEOS ─── */}
+      {otherVideos.length > 0 && (
+        <section className="py-20 bg-white">
           <div className="section-container">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-            >
-              <TiltCard glowColor="rgba(168, 85, 247, 0.15)">
-                <div className="glass-card p-10 md:p-14 text-center bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
-                  <motion.span
-                    className="text-5xl mb-6 block"
-                    animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    🚀
-                  </motion.span>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                    Alpha Seekers Network
-                  </h2>
-                  <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                    I founded Alpha Seekers to create a learning community for ambitious
-                    students — especially those from Afghanistan. Education is the most
-                    powerful tool for change, and I believe every student deserves access
-                    to world-class learning.
-                  </p>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Link href="/alpha-seekers" className="btn-primary">
-                      Learn More <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </motion.div>
-                </div>
-              </TiltCard>
-            </motion.div>
+            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
+              <div>
+                <span className="section-eyebrow">More to watch</span>
+                <h2 className="section-title">Animation & on stage.</h2>
+              </div>
+              <Link
+                href="/media"
+                className="text-blue-700 font-medium inline-flex items-center gap-1 hover:gap-2 transition-all"
+              >
+                All media <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              {otherVideos.slice(0, 2).map((v) => {
+                const id = extractYouTubeId(v.youtubeUrl!);
+                if (!id) return null;
+                return (
+                  <FeaturedVideo
+                    key={v.id}
+                    youtubeId={id}
+                    title={v.title}
+                    description={v.description}
+                    eyebrow={v.type}
+                  />
+                );
+              })}
+            </div>
           </div>
         </section>
-      </ParallaxSection>
+      )}
 
-      {/* ─── DREAM BANNER ─── */}
-      <section className="py-16 overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="relative"
-        >
-          <motion.div
-            animate={{ x: [0, -1000] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="flex whitespace-nowrap gap-12 text-5xl md:text-7xl font-black text-purple-100 select-none"
-          >
-            {Array.from({ length: 4 }).map((_, i) => (
-              <span key={i} className="flex items-center gap-12">
-                <span>DREAM BIG</span>
-                <span className="text-pink-100">✦</span>
-                <span>WORK HARD</span>
-                <span className="text-amber-100">✦</span>
-                <span>STAY CURIOUS</span>
-                <span className="text-purple-200">✦</span>
-              </span>
-            ))}
-          </motion.div>
-        </motion.div>
+      {/* ─── CTA ─── */}
+      <section className="py-24 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-sky-400 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl" />
+        </div>
+        <div className="section-container text-center max-w-3xl mx-auto relative">
+          <h2 className="text-4xl md:text-6xl font-black mb-4 leading-tight">
+            Building a path so other girls can{" "}
+            <span className="text-sky-300">walk it too.</span>
+          </h2>
+          <p className="text-blue-100 mb-10 text-lg">
+            From Afghanistan to Canada, from classrooms to stages — every step
+            is part of a bigger story.
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link
+              href="/vision"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-blue-950 font-semibold hover:bg-sky-100 transition"
+            >
+              Read my vision <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-white/40 text-white font-semibold hover:bg-white/10 transition"
+            >
+              Get in touch
+            </Link>
+          </div>
+        </div>
       </section>
     </>
   );

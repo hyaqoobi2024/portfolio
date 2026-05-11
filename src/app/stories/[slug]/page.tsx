@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowLeft, Clock, Share2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -14,62 +14,33 @@ export default async function StoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({
-    where: { slug, published: true },
-  });
-
-  if (!post) notFound();
+  const post = await prisma.post.findUnique({ where: { slug } });
+  if (!post || !post.published) notFound();
 
   return (
-    <section className="py-20">
-      <div className="section-container max-w-3xl">
+    <article className="min-h-screen bg-white">
+      <div className="section-container max-w-3xl py-20">
         <Link
           href="/stories"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-purple-600 transition-colors mb-8"
+          className="inline-flex items-center gap-1 text-sm text-blue-700 hover:underline mb-6"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to Stories
+          <ArrowLeft className="w-4 h-4" /> All stories
         </Link>
-
-        <article>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="sticker-badge text-xs">{post.category}</span>
-            <span className="text-sm text-gray-400 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> {readingTime(post.content)}
-            </span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-black mb-4">{post.title}</h1>
-          <p className="text-gray-500 mb-8">{formatDate(post.createdAt)}</p>
-
-          {post.coverImage && (
-            <div className="rounded-2xl overflow-hidden mb-10">
-              <img
-                src={post.coverImage}
-                alt={post.title}
-                className="w-full h-auto"
-              />
-            </div>
-          )}
-
-          <div className="prose prose-lg prose-purple max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {post.content}
-            </ReactMarkdown>
-          </div>
-
-          <div className="border-t border-gray-200 mt-12 pt-8 flex items-center justify-between">
-            <Link
-              href="/stories"
-              className="text-sm text-gray-500 hover:text-purple-600"
-            >
-              ← More Stories
-            </Link>
-            <button className="btn-outline text-sm py-2 px-4 flex items-center gap-2">
-              <Share2 className="w-4 h-4" /> Share
-            </button>
-          </div>
-        </article>
+        <p className="text-sm text-blue-600 font-medium mb-2">
+          {formatDate(post.createdAt)} · {readingTime(post.content)}
+        </p>
+        <h1 className="text-4xl md:text-5xl font-black text-blue-950 mb-6 leading-tight">
+          {post.title}
+        </h1>
+        {post.excerpt && (
+          <p className="text-lg text-gray-700 italic mb-8">{post.excerpt}</p>
+        )}
+        <div className="prose prose-lg max-w-none prose-headings:text-blue-950 prose-a:text-blue-700">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {post.content}
+          </ReactMarkdown>
+        </div>
       </div>
-    </section>
+    </article>
   );
 }

@@ -2,23 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import AnimatedBackground from "@/components/AnimatedBackground";
-import SparkCursor from "@/components/SparkCursor";
+import SiteFrame from "@/components/SiteFrame";
 
 export const metadata: Metadata = {
-  title: "Sahar Nikzad — Visionary, Scholar, Founder",
+  title: "Sahar Nikzad — Storyteller, Founder, Student",
   description:
-    "Personal portfolio of Sahar Nikzad — WLOT Scholar at GNS IB School Canada, founder of Alpha Seekers Network, aspiring neuroscientist and AI researcher.",
-  keywords: [
-    "Sahar Nikzad",
-    "WLOT Scholarship",
-    "GNS IB School",
-    "Alpha Seekers Network",
-    "Neuroscience",
-    "AI",
-    "Afghanistan",
-    "MIT",
-  ],
+    "Personal portfolio of Sahar Nikzad — IB student, founder of AlphaSeekers, storyteller, animator, and advocate for girls' education.",
 };
 
 export default function RootLayout({
@@ -40,11 +29,11 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen flex flex-col">
-        <SparkCursor />
-        <AnimatedBackground />
+      <body className="min-h-screen flex flex-col bg-white text-blue-950">
         <Navigation />
-        <main className="flex-1 pt-16">{children}</main>
+        <main className="flex-1 pt-16">
+          <SiteFrame>{children}</SiteFrame>
+        </main>
         <Footer />
       </body>
     </html>

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -43,11 +43,110 @@ model Interview {
 }
 
 model Profile {
-  id              String  @id @default("singleton")
-  name            String  @default("Sahar Nikzad")
-  tagline         String  @default("IB Student · WLOT Scholar · Founder · Dreamer · Builder")
-  bio             String  @default("")
-  visionStatement String  @default("")
-  profileImage    String?
-  resumeUrl       String?
+  id                String  @id @default("singleton")
+  name              String  @default("Sahar Nikzad")
+  tagline           String  @default("IB Student · Founder · Storyteller")
+  bio               String  @default("")
+  visionStatement   String  @default("")
+  nameMeaning       String  @default("Sahar means dawn — the first light at the edge of night.")
+  profileImage      String?
+  resumeUrl         String?
+  totalServiceHours Int     @default(1000)
+  contactEmail      String  @default("")
+  alphaSeekersEmail String  @default("")
+  linkedinUrl       String  @default("")
+  instagramUrl      String  @default("")
+}
+
+model Greeting {
+  id        String   @id @default(cuid())
+  language  String
+  text      String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   @default("Creative")
+  description String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Experience {
+  id           String    @id @default(cuid())
+  title        String
+  organization String
+  startDate    DateTime
+  endDate      DateTime?
+  current      Boolean   @default(false)
+  description  String    @default("")
+  type         String    @default("Work")
+  order        Int       @default(0)
+  createdAt    DateTime  @default(now())
+}
+
+model Initiative {
+  id          String   @id @default(cuid())
+  name        String
+  role        String   @default("")
+  description String   @default("")
+  image       String?
+  link        String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  institution String
+  program     String    @default("")
+  startDate   DateTime?
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  description String    @default("")
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  role        String   @default("")
+  description String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Volunteering {
+  id           String   @id @default(cuid())
+  organization String
+  role         String   @default("")
+  hours        Int      @default(0)
+  description  String   @default("")
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model Media {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   @default("Video")
+  youtubeUrl  String?
+  image       String?
+  description String   @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model JourneyMilestone {
+  id          String    @id @default(cuid())
+  title       String
+  date        DateTime?
+  description String    @default("")
+  image       String?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
 }
