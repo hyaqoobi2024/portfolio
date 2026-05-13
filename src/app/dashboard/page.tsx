@@ -1,80 +1,98 @@
 import { prisma } from "@/lib/db";
 import Link from "next/link";
-import { FileText, Video, PenTool, Eye, Plus } from "lucide-react";
+import {
+  FileText,
+  Video,
+  User,
+  Sparkles,
+  Briefcase,
+  Rocket,
+  GraduationCap,
+  Users,
+  HandHeart,
+  Film,
+  Compass,
+  MessageCircle,
+} from "lucide-react";
 
 export default async function DashboardPage() {
-  const [totalPosts, publishedPosts, draftPosts, totalInterviews] =
-    await Promise.all([
-      prisma.post.count(),
-      prisma.post.count({ where: { published: true } }),
-      prisma.post.count({ where: { published: false } }),
-      prisma.interview.count(),
-    ]);
+  const [
+    posts,
+    interviews,
+    skills,
+    experiences,
+    initiatives,
+    education,
+    clubs,
+    volunteering,
+    media,
+    journey,
+    greetings,
+    profile,
+  ] = await Promise.all([
+    prisma.post.count(),
+    prisma.interview.count(),
+    prisma.skill.count(),
+    prisma.experience.count(),
+    prisma.initiative.count(),
+    prisma.education.count(),
+    prisma.club.count(),
+    prisma.volunteering.count(),
+    prisma.media.count(),
+    prisma.journeyMilestone.count(),
+    prisma.greeting.count(),
+    prisma.profile.findUnique({ where: { id: "singleton" } }),
+  ]);
 
-  const stats = [
-    {
-      icon: FileText,
-      label: "Total Posts",
-      value: totalPosts,
-      color: "text-purple-500 bg-purple-50",
-    },
-    {
-      icon: Eye,
-      label: "Published",
-      value: publishedPosts,
-      color: "text-green-500 bg-green-50",
-    },
-    {
-      icon: PenTool,
-      label: "Drafts",
-      value: draftPosts,
-      color: "text-amber-500 bg-amber-50",
-    },
-    {
-      icon: Video,
-      label: "Interviews",
-      value: totalInterviews,
-      color: "text-blue-500 bg-blue-50",
-    },
+  const cards = [
+    { href: "/dashboard/profile", icon: User, label: "Profile & Vision", count: null, description: "Name, tagline, bio, vision, contact." },
+    { href: "/dashboard/greetings", icon: MessageCircle, label: "Greetings", count: greetings, description: "Multilingual hellos on the homepage." },
+    { href: "/dashboard/skills", icon: Sparkles, label: "Skills", count: skills, description: "Creative, leadership, sports." },
+    { href: "/dashboard/journey", icon: Compass, label: "Journey", count: journey, description: "Story milestones — Canada, WLOT, more." },
+    { href: "/dashboard/experiences", icon: Briefcase, label: "Career", count: experiences, description: "Teaching and founding roles." },
+    { href: "/dashboard/initiatives", icon: Rocket, label: "Initiatives", count: initiatives, description: "AlphaSeekers, Solh, Hamdeli." },
+    { href: "/dashboard/education", icon: GraduationCap, label: "Education", count: education, description: "Schools and programs." },
+    { href: "/dashboard/clubs", icon: Users, label: "Clubs", count: clubs, description: "Math Club, Round Square, GMUN." },
+    { href: "/dashboard/volunteering", icon: HandHeart, label: "Volunteering", count: volunteering, description: "Roles and hours." },
+    { href: "/dashboard/media", icon: Film, label: "Videos & Photos", count: media, description: "Animation, speeches, theatre." },
+    { href: "/dashboard/interviews", icon: Video, label: "Interviews", count: interviews, description: "CBC, Check News, etc." },
+    { href: "/dashboard/posts", icon: FileText, label: "Posts", count: posts, description: "Blog posts and stories." },
   ];
+
+  const firstName = profile?.name?.split(" ")[0] ?? "Sahar";
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Hey Sahar! 👋</h1>
-        <p className="text-gray-500 mt-1">Here&apos;s what&apos;s happening with your site.</p>
+        <h1 className="text-3xl font-bold text-blue-950">Hey {firstName}</h1>
+        <p className="text-gray-500 mt-1">
+          Edit anything on your site from here. Every section is editable.
+        </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4"
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {cards.map((card) => (
+          <Link
+            key={card.href}
+            href={card.href}
+            className="bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 hover:shadow-sm transition group"
           >
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}>
-              <stat.icon className="w-5 h-5" />
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <card.icon className="w-5 h-5" />
+              </div>
+              {card.count !== null && (
+                <span className="text-sm font-semibold text-gray-500">
+                  {card.count}
+                </span>
+              )}
             </div>
-            <div>
-              <p className="text-2xl font-bold">{stat.value}</p>
-              <p className="text-sm text-gray-500">{stat.label}</p>
-            </div>
-          </div>
+            <p className="font-semibold text-blue-950 group-hover:text-blue-700">
+              {card.label}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">{card.description}</p>
+          </Link>
         ))}
-      </div>
-
-      <div className="flex gap-4">
-        <Link
-          href="/dashboard/posts/new"
-          className="btn-primary text-sm py-2.5 px-5"
-        >
-          <Plus className="w-4 h-4" /> New Post
-        </Link>
-        <Link
-          href="/dashboard/interviews"
-          className="btn-outline text-sm py-2.5 px-5"
-        >
-          <Plus className="w-4 h-4" /> New Interview
-        </Link>
       </div>
     </div>
   );
