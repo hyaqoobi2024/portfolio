@@ -11,7 +11,7 @@ interface Sparkle {
   color: string;
 }
 
-const colors = ["#7c3aed", "#ec4899", "#fbbf24", "#10b981", "#f97316"];
+const colors = ["#7c3aed", "#3b82f6", "#fbbf24", "#10b981", "#f97316"];
 
 export default function SparkCursor() {
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
@@ -64,7 +64,7 @@ export default function SparkCursor() {
             y: cursorY,
             translateX: "-50%",
             translateY: "-50%",
-            background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+            background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
             boxShadow: "0 0 12px rgba(124,58,237,0.5)",
           }}
         />

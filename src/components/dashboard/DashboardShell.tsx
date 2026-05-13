@@ -96,7 +96,7 @@ export default function DashboardShell({ user, children }: DashboardShellProps) 
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white text-xs font-bold">
               {user.name?.[0] || "S"}
             </div>
             <div className="flex-1 min-w-0">

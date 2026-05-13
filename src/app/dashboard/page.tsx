@@ -34,7 +34,7 @@ export default async function DashboardPage() {
       icon: Video,
       label: "Interviews",
       value: totalInterviews,
-      color: "text-pink-500 bg-pink-50",
+      color: "text-blue-500 bg-blue-50",
     },
   ];
 

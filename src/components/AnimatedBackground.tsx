@@ -7,7 +7,7 @@ export default function AnimatedBackground() {
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
       <motion.div
         className="animated-blob w-96 h-96 top-[-10%] right-[-5%]"
-        style={{ background: "linear-gradient(135deg, #c084fc, #f472b6)" }}
+        style={{ background: "linear-gradient(135deg, #c084fc, #3b82f6)" }}
         animate={{
           x: [0, 30, -20, 0],
           y: [0, -20, 20, 0],
@@ -27,7 +27,7 @@ export default function AnimatedBackground() {
       />
       <motion.div
         className="animated-blob w-64 h-64 top-[40%] left-[40%]"
-        style={{ background: "linear-gradient(135deg, #fbbf24, #f472b6)" }}
+        style={{ background: "linear-gradient(135deg, #fbbf24, #3b82f6)" }}
         animate={{
           x: [0, 20, -30, 0],
           y: [0, -30, 10, 0],

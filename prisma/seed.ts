@@ -58,7 +58,7 @@ My first day at Glenlyon Norfolk School was overwhelming in the best way. The IB
 
 ## What's Next
 
-This is just the beginning. I have my sights set high — on neuroscience, on AI, on MIT. But more than that, I want to use what I learn to make a real difference.
+This is just the beginning. I'm building, speaking, animating, and learning — and I'm not slowing down.
 
 Every journey starts with a single step. This is mine.
 

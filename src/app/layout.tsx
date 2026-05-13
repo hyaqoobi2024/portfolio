@@ -6,18 +6,17 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import SparkCursor from "@/components/SparkCursor";
 
 export const metadata: Metadata = {
-  title: "Sahar Nikzad — Visionary, Scholar, Founder",
+  title: "Sahar Nikzad — Animator, Speaker, Co-founder",
   description:
-    "Personal portfolio of Sahar Nikzad — WLOT Scholar at GNS IB School Canada, founder of Alpha Seekers Network, aspiring neuroscientist and AI researcher.",
+    "Personal portfolio of Sahar Nikzad — WLOT scholar, co-founder of Alpha Seekers Network, animator, public speaker, and storyteller.",
   keywords: [
     "Sahar Nikzad",
     "WLOT Scholarship",
-    "GNS IB School",
     "Alpha Seekers Network",
-    "Neuroscience",
-    "AI",
+    "Animation",
+    "Public Speaking",
+    "Storytelling",
     "Afghanistan",
-    "MIT",
   ],
 };
 

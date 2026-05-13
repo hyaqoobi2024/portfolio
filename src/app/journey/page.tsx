@@ -2,72 +2,79 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { Heart, BookOpen, Plane, MapPin, Lightbulb, Target, Star } from "lucide-react";
+import { Heart, BookOpen, Plane, MapPin, Lightbulb, Star, Mic } from "lucide-react";
 import TiltCard from "@/components/TiltCard";
 
 const milestones = [
   {
     emoji: "🇦🇫",
     icon: Heart,
-    year: "Early Years",
-    title: "Where It All Began",
-    desc: "Growing up between Iran and Afghanistan, I learned early on that curiosity and resilience are superpowers. Every challenge made me stronger, and I always knew I was meant for something bigger.",
-    color: "bg-rose-50 border-rose-200",
-    glow: "rgba(244, 63, 94, 0.15)",
+    year: "Early years",
+    title: "Where it all began",
+    desc: "I grew up between Iran and Afghanistan. Curiosity and resilience became my superpowers early on.",
+    color: "bg-sky-50 border-sky-200",
+    glow: "rgba(244, 63, 94, 0.18)",
+    accent: "text-sky-500",
   },
   {
     emoji: "📚",
     icon: BookOpen,
-    year: "Grade School",
-    title: "Top of My Class in Kabul",
-    desc: "At Kelid-e-Nejat High School, I found my element — always ranking at the top, competing in seminars, singing in performances, and creating some of my best memories. School was where I truly came alive.",
+    year: "Grade school",
+    title: "Top of my class in Kabul",
+    desc: "At Kelid-e-Nejat High School, I found my element — ranking at the top, competing in seminars, singing in performances, building my best memories.",
     color: "bg-blue-50 border-blue-200",
-    glow: "rgba(59, 130, 246, 0.15)",
+    glow: "rgba(59, 130, 246, 0.18)",
+    accent: "text-blue-500",
   },
   {
     emoji: "⚡",
     icon: Lightbulb,
-    year: "A Transformation",
-    title: "My Second Birth: Cluster Education",
-    desc: "Joining Aziz Royesh's Cluster Education program was a turning point. The Empowerment sessions gave me clarity, vision, and a mission: to create a world where every girl can thrive. I found my voice and I've never stopped using it.",
+    year: "A turning point",
+    title: "Cluster Education changed me",
+    desc: "Aziz Royesh's Empowerment program gave me clarity, vision, and a mission: a world where every girl can thrive. I found my voice — and never stopped using it.",
     color: "bg-violet-50 border-violet-200",
-    glow: "rgba(139, 92, 246, 0.15)",
+    glow: "rgba(139, 92, 246, 0.18)",
+    accent: "text-violet-500",
   },
   {
-    emoji: "🕌",
+    emoji: "🕊️",
     icon: Star,
-    year: "Taking Action",
-    title: "Leading Solh Team & Teaching Women",
-    desc: "I co-founded the Solh (Peace) team and started teaching literacy classes to nearly a hundred women in our community. My own mother was the first to register. Watching her grow reminded me why I do what I do — and she told me I was the strongest in our family.",
+    year: "Taking action",
+    title: "Co-founding the Solh team",
+    desc: "We started teaching literacy classes to nearly a hundred women in our community. My own mother was the first to register — and the proudest of me.",
     color: "bg-emerald-50 border-emerald-200",
-    glow: "rgba(16, 185, 129, 0.15)",
+    glow: "rgba(16, 185, 129, 0.18)",
+    accent: "text-emerald-500",
   },
   {
     emoji: "✈️",
     icon: Plane,
-    year: "Life-Changing Moment",
-    title: "Winning the WLOT Scholarship",
-    desc: "I earned my own money by teaching mathematics and started exploring the online world for opportunities. Then the WLOT scholarship came along — a bridge to Canada, a bridge to my dreams. I grabbed it and never looked back!",
+    year: "The bridge",
+    title: "Winning the WLOT scholarship",
+    desc: "I earned my own money by teaching math, then started searching online for opportunities. The WLOT scholarship was the bridge to Canada — and I grabbed it.",
     color: "bg-amber-50 border-amber-200",
-    glow: "rgba(245, 158, 11, 0.15)",
+    glow: "rgba(245, 158, 11, 0.18)",
+    accent: "text-amber-600",
   },
   {
     emoji: "🇨🇦",
     icon: MapPin,
-    year: "A New Chapter",
-    title: "GNS IB School, Canada",
-    desc: "Now I'm studying the IB Diploma at Glenlyon Norfolk School — exploring neuroscience, medicine, and every opportunity I can find. I founded Alpha Seekers Network to make sure every ambitious Afghan student can learn, grow, and dream with me.",
+    year: "A new chapter",
+    title: "GNS — IB student in Canada",
+    desc: "Now I'm studying the IB Diploma at Glenlyon Norfolk School. I co-founded AlphaSeekers Network to make sure every ambitious Afghan student has a path too.",
     color: "bg-sky-50 border-sky-200",
-    glow: "rgba(14, 165, 233, 0.15)",
+    glow: "rgba(14, 165, 233, 0.18)",
+    accent: "text-sky-500",
   },
   {
-    emoji: "🎯",
-    icon: Target,
-    year: "The Dream",
-    title: "Dr. Sahar Nikzad",
-    desc: "I can already hear it: 'Dr. Sahar Nikzad, to the emergency department.' I'm going to study neuroscience, attend medical school, build hospitals, publish my mother's story, and speak at conferences around the world. This is just the beginning 🚀",
-    color: "bg-purple-50 border-purple-200",
-    glow: "rgba(168, 85, 247, 0.15)",
+    emoji: "🎙️",
+    icon: Mic,
+    year: "Onstage",
+    title: "Speaking up — and not slowing down",
+    desc: "From assembly stages to animation, writing, and the Round Square \"Let's Afghan Girls Learn\" campaign — I'm just getting louder.",
+    color: "bg-blue-50 border-blue-200",
+    glow: "rgba(37, 99, 235, 0.18)",
+    accent: "text-blue-500",
   },
 ];
 
@@ -80,128 +87,145 @@ export default function JourneyPage() {
   const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section className="py-20" ref={containerRef}>
-      <div className="section-container">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 100 }}
-          className="text-center mb-16"
-        >
-          <motion.p
-            initial={{ opacity: 0, rotate: -5 }}
-            animate={{ opacity: 1, rotate: -3 }}
-            className="handwriting text-2xl md:text-3xl mb-3"
-          >
-            my story so far ✨
-          </motion.p>
-          <h1 className="text-5xl md:text-7xl font-black gradient-text mb-6">
-            My Journey
-          </h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
-          >
-            From Afghanistan to an IB school in Canada — a story of ambition,
-            resilience, and dreaming bigger than anyone expected. Every step
-            brought me closer to who I&apos;m becoming.
-          </motion.p>
-        </motion.div>
-
-        {/* Timeline */}
-        <div className="relative max-w-3xl mx-auto">
-          {/* Animated vertical line */}
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 hidden md:block -translate-x-1/2" />
+    <>
+      {/* HERO */}
+      <section className="relative overflow-hidden py-20 lg:py-28">
+        {/* Background blobs */}
+        <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
           <motion.div
-            className="absolute left-8 md:left-1/2 top-0 w-0.5 bg-gradient-to-b from-purple-500 via-pink-500 to-amber-500 hidden md:block -translate-x-1/2 origin-top"
-            style={{ height: lineHeight }}
+            className="absolute -top-20 -left-20 w-[40rem] h-[40rem] rounded-full opacity-40"
+            style={{
+              background: "radial-gradient(circle, rgba(192,132,252,0.5), transparent 60%)",
+              filter: "blur(60px)",
+            }}
+            animate={{ scale: [1, 1.1, 1], x: [0, 30, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
           />
-
-          {/* Mobile line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200 md:hidden" />
-
-          {milestones.map((m, i) => (
-            <motion.div
-              key={m.title}
-              initial={{ opacity: 0, x: i % 2 === 0 ? -60 : 60, y: 20 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{
-                duration: 0.7,
-                type: "spring",
-                stiffness: 80,
-                damping: 15,
-              }}
-              className={`relative mb-14 ${
-                i % 2 === 0 ? "md:pr-[55%]" : "md:pl-[55%]"
-              } pl-20 md:pl-0`}
-            >
-              {/* Dot on line */}
-              <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                className={`absolute left-6 md:left-1/2 top-6 w-5 h-5 rounded-full border-4 border-white shadow-lg -translate-x-1/2 z-10 ${
-                  i % 2 === 0 ? "bg-purple-400" : "bg-pink-400"
-                }`}
-              />
-
-              {/* Pulse ring */}
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: [1, 2], opacity: [0.5, 0] }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: 1 }}
-                className={`absolute left-6 md:left-1/2 top-6 w-5 h-5 rounded-full -translate-x-1/2 z-5 ${
-                  i % 2 === 0 ? "bg-purple-400" : "bg-pink-400"
-                }`}
-              />
-
-              {/* Card with Tilt */}
-              <TiltCard glowColor={m.glow}>
-                <div
-                  className={`glass-card p-6 md:p-8 ${m.color} border relative overflow-hidden`}
-                >
-                  <motion.span
-                    className="text-3xl md:text-4xl mb-3 block"
-                    whileHover={{ scale: 1.3, rotate: 15 }}
-                    transition={{ type: "spring" }}
-                  >
-                    {m.emoji}
-                  </motion.span>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
-                    {m.year}
-                  </p>
-                  <h3 className="text-xl font-bold mb-3">{m.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{m.desc}</p>
-                </div>
-              </TiltCard>
-            </motion.div>
-          ))}
+          <motion.div
+            className="absolute top-1/3 -right-20 w-[36rem] h-[36rem] rounded-full opacity-40"
+            style={{
+              background: "radial-gradient(circle, rgba(59, 130, 246,0.5), transparent 60%)",
+              filter: "blur(60px)",
+            }}
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          />
         </div>
 
-        {/* Closing */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ type: "spring", stiffness: 100 }}
-          className="text-center mt-16"
-        >
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 grid lg:grid-cols-[1.3fr_1fr] gap-10 items-end">
+          <div>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="handwriting text-2xl md:text-3xl text-purple-500 mb-3"
+            >
+              my story so far ✨
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="text-6xl md:text-8xl lg:text-[8rem] font-black gradient-text leading-[0.92] mb-6"
+            >
+              My Journey.
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-lg lg:text-xl text-gray-700 leading-relaxed max-w-xl"
+            >
+              From Afghanistan to an IB school in Canada — every chapter shaped
+              who I am, what I build, and who I do it for.
+            </motion.p>
+          </div>
           <motion.div
-            animate={{ scale: [1, 1.02, 1] }}
-            transition={{ duration: 3, repeat: Infinity }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.7 }}
+            className="hidden lg:flex justify-end"
           >
-            <p className="handwriting text-3xl md:text-4xl text-purple-500">
-              &ldquo;The best is yet to come.&rdquo; ✨
-            </p>
+            <span className="text-[10rem] xl:text-[14rem] leading-none">🗺️</span>
           </motion.div>
-        </motion.div>
-      </div>
-    </section>
+        </div>
+      </section>
+
+      {/* TIMELINE */}
+      <section className="py-12 lg:py-16" ref={containerRef}>
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="relative max-w-4xl mx-auto">
+            {/* Track */}
+            <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-1 bg-purple-100 rounded-full" />
+            <motion.div
+              style={{ height: lineHeight }}
+              className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 w-1 bg-gradient-to-b from-purple-500 via-blue-500 to-amber-500 rounded-full origin-top"
+            />
+
+            <div className="space-y-10 md:space-y-16">
+              {milestones.map((m, i) => {
+                const isRight = i % 2 === 0;
+                return (
+                  <motion.div
+                    key={m.title}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className={`relative grid md:grid-cols-2 items-center gap-6 md:gap-10`}
+                  >
+                    {/* Dot */}
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ type: "spring", stiffness: 250, damping: 16 }}
+                      className="absolute left-4 md:left-1/2 md:-translate-x-1/2 -translate-x-1/2 top-7 w-5 h-5 rounded-full bg-white border-4 border-purple-500 z-10 shadow-md"
+                    />
+
+                    {/* Card */}
+                    <div
+                      className={`pl-12 md:pl-0 ${
+                        isRight ? "md:col-start-2" : "md:col-start-1 md:text-right md:[&_.tilt-wrap]:flex md:[&_.tilt-wrap]:justify-end"
+                      }`}
+                    >
+                      <div className="tilt-wrap">
+                        <TiltCard glowColor={m.glow}>
+                          <div
+                            className={`glass-card p-6 md:p-7 ${m.color} border max-w-xl`}
+                          >
+                            <div className="flex items-start gap-4 mb-2">
+                              <motion.span
+                                className="text-4xl shrink-0"
+                                whileHover={{ scale: 1.2, rotate: 8 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                              >
+                                {m.emoji}
+                              </motion.span>
+                              <div className="text-left flex-1">
+                                <p
+                                  className={`text-[10px] uppercase tracking-[0.2em] ${m.accent} font-bold mb-1`}
+                                >
+                                  {m.year}
+                                </p>
+                                <h3 className="text-xl md:text-2xl font-black leading-tight">
+                                  {m.title}
+                                </h3>
+                              </div>
+                            </div>
+                            <p className="text-gray-700 leading-relaxed text-sm md:text-base text-left">
+                              {m.desc}
+                            </p>
+                          </div>
+                        </TiltCard>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
